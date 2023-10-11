@@ -1,0 +1,64 @@
+{% extends "base.html" %} 
+{% block content %}
+
+<div class="flex flex-wrap p-4">
+  <div class="flex flex-col p-4">
+    <h2>Employee Timesheet</h2>
+    <form method="post" class="space-y-4">
+      {% csrf_token %} 
+      {{ employee_timesheets_form.as_p }}
+      <button
+        type="submit"
+        class="inline-flex items-center py-2.5 px-4 text-xs font-medium text-center text-white bg-blue-700 rounded-md focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900 hover:bg-blue-800"
+      >
+        Submit
+      </button>
+    </form>
+  </div>
+  <div class="flex flex-col p-4">
+    <h2>Delete Timesheet</h2>
+    <form method="post" class="space-y-4">
+      {% csrf_token %} 
+      {{ delete_timesheet_form.as_p }}
+      <button
+        type="submit"
+        class="inline-flex items-center py-2.5 px-4 text-xs font-medium text-center text-white bg-blue-700 rounded-md focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900 hover:bg-blue-800"
+      >
+        Delete
+      </button>
+    </form>
+  </div>
+</div>
+{% for message in messages %}
+<div class="p-4">{{ message }}</div>
+{% endfor %} 
+{% if timesheets %}
+<div class="overflow-x-auto">
+  <h1 class="font-medium py-4 mt-2 text-lg">Employee Timesheet</h1>
+  <table class="text-sm text-left text-gray-700 dark:text-gray-400">
+    <thead
+      class="text-xs text-gray-950 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400"
+    >
+      <tr>
+        <th scope="col" class="px-4 py-3">Timesheet ID</th>
+        <th scope="col" class="px-4 py-3">Employee ID</th>
+        <th scope="col" class="px-4 py-3">Task ID</th>
+        <th scope="col" class="px-4 py-3">Start Time</th>
+        <th scope="col" class="px-4 py-3">End Time</th>
+      </tr>
+    </thead>
+    {% for timesheet in timesheets %}
+    <tbody>
+      <tr class="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
+        <td class="px-4 py-2">{{ timesheet.0 }}</td>
+        <td class="px-4 py-2">{{ timesheet.3 }}</td>
+        <td class="px-4 py-2">{{ timesheet.4 }}</td>
+        <td class="px-4 py-2">{{ timesheet.1 }}</td>
+        <td class="px-4 py-2">{{ timesheet.2 }}</td>
+      </tr>
+    </tbody>
+    {% endfor %}
+  </table>
+</div>
+{% endif %} 
+{% endblock content %}

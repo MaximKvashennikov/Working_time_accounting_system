@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Import result{% endblock title %}
+{% block content %}
+
+<div class="py-2.5 px-4">
+    <h1 class="font-medium py-2.5 px-4">Import result</h1>
+    <p>Imported {{ position_count }} positions</p>
+    <p>Imported {{ employee_count }} employees</p>
+    <p>Imported {{ timesheet_count }} timesheets</p>
+    <br>
+    <a href="{% url 'import_data' %}"
+        class="inline-flex items-center py-2.5 px-4 text-xs font-medium text-center text-white bg-blue-700 rounded-md focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900 hover:bg-blue-800"
+    >Back to data import</a>
+
+    <br><br>
+    {% for message in messages %}
+    {% if message.tags == 'error' %}
+    <div class="alert alert-danger">{{ message }}</div>
+    {% endif %}
+    {% endfor %}
+</div>
+    
+{% endblock content %}

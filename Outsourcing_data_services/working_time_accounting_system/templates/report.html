@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}Reports{% endblock title %}
+
+
+{% block content %}
+
+
+
+<div class="flex flex-wrap items-center justify-between p-4 ">
+
+{% if top5_long_tasks %}
+<div class="overflow-x-auto">
+  <h1 class="font-medium py-4 mt-2 text-lg">Top 5 long tasks</h1>
+  <table class="text-sm text-left text-gray-500 dark:text-gray-400">
+      <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+          <tr>
+              <th scope="col" class="px-6 py-3">
+                  Hours spent
+              </th>
+              <th scope="col" class="px-6 py-3">
+                  Task
+              </th>
+          </tr>
+      </thead>
+      {% for task in top5_long_tasks %}
+      <tbody>
+          <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+              <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                {{ task.total_hours }}
+              </th>
+              <td class="px-6 py-4">
+                {{ task.task__task_name }}
+              </td>
+          </tr>
+      </tbody>
+      {% endfor %}
+  </table>
+</div>
+
+{% else %}
+<p class="py-4 mt-2 text-lg">There is no data in the database.</p>
+{% endif %}
+
+
+
+{% if top5_cost_tasks %}
+<div class="relative overflow-x-auto">
+  <h1 class="font-medium py-4 mt-2 text-lg">Top 5 expensive tasks</h1>
+  <table class="text-sm text-left text-gray-500 dark:text-gray-400">
+      <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+          <tr>
+              <th scope="col" class="px-6 py-3">
+                Total cost
+              </th>
+              <th scope="col" class="px-6 py-3">
+                Task
+              </th>
+          </tr>
+      </thead>
+      {% for task in top5_cost_tasks %}
+      <tbody>
+          <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+              <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                {{ task.total_cost_sum }}
+              </th>
+              <td class="px-6 py-4">
+                {{ task.task__task_name }}
+              </td>
+          </tr>
+      </tbody>
+      {% endfor %}
+  </table>
+</div>
+{% else %}
+<p class="py-4 mt-2 text-lg">There is no data in the database.</p>
+{% endif %}
+
+{% if top5_employees %}
+<div class="relative overflow-x-auto">
+  <h1 class="font-medium py-4 mt-2 text-lg">Top 5 employees with the most hours worked</h1>
+  <table class="text-sm text-left text-gray-500 dark:text-gray-400">
+      <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+          <tr>
+              <th scope="col" class="px-6 py-3">
+                Hours worked
+              </th>
+              <th scope="col" class="px-6 py-3">
+                Employee
+              </th>
+          </tr>
+      </thead>
+      {% for employee in top5_employees %}
+      <tbody>
+          <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+              <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                {{ employee.total_hours }}
+              </th>
+              <td class="px-6 py-4">
+                {{ employee.employee__employee_name }}
+              </td>
+          </tr>
+      </tbody>
+      {% endfor %}
+  </table>
+</div>
+{% else %}
+<p class="py-4 mt-2 text-lg">There is no data in the database.</p>
+{% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Import Data{% endblock title %}
+{% block content %}
+
+<h1 class="font-medium py-2.5 px-4">Importing data from CSV files</h1>
+<div class="flex flex-wrap items-center justify-between p-4 ">
+    <form method="post" enctype="multipart/form-data" class="space-y-4">
+        {% csrf_token %}
+        <div class="flex flex-col">
+          <label for="{{ form.positions_file.id_for_label }}" class="mb-1">{{ form.positions_file.label }}</label>
+          {{ form.positions_file }}
+        </div>
+        <div class="flex flex-col">
+          <label for="{{ form.employees_file.id_for_label }}" class="mb-1">{{ form.employees_file.label }}</label>
+          {{ form.employees_file }}
+        </div>
+        <div class="flex flex-col">
+          <label for="{{ form.timesheets_file.id_for_label }}" class="mb-1">{{ form.timesheets_file.label }}</label>
+          {{ form.timesheets_file }}
+        </div>
+        <button type="submit" class="inline-flex items-center py-2.5 px-4 text-xs font-medium text-center text-white bg-blue-700 rounded-md focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900 hover:bg-blue-800">
+            Import Data
+        </button>
+      </form>
+</div>
+{% endblock content %}

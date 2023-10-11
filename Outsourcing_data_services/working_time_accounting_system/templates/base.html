@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+{% load static %}
+
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{% block title %}Project{% endblock title %}</title>
+    <link
+      rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v5.11.2/css/all.css"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{% static 'css/output.css' %}"
+    />
+    <script src="{% static 'flowbite.js' %}"></script>
+  </head>
+
+  <body>
+    <!-- <nav
+      class="p-2 bg-gray-700 shadow md:flex md:items-center md:justify-between"
+    >
+      <div class="flex justify-between items-center">
+        <span class="text-2xl text-white"> Project </span>
+
+        <span class="text-3xl cursor-pointer mx-2 md:hidden block">
+          <ion-icon name="menu" onclick="Menu(this)"></ion-icon>
+        </span>
+      </div>
+
+      <ul
+        class="md:flex md:items-center z-[-1] md:z-auto md:static absolute bg-gray-800 text-white w-full left-0 md:w-auto md:py-0 py-4 md:pl-0 pl-7 md:opacity-100 opacity-0 top-[-400px] transition-all ease-in duration-500"
+      >
+        <li class="mx-4 my-6 md:my-0">
+          <a
+            href="{% url 'timesheet' %}"
+            class="text-xl hover:text-cyan-500 hover:underline duration-500"
+            >timesheet</a
+          >
+        </li>
+        <li class="mx-4 my-6 md:my-0">
+          <a
+            id="import_data"
+            href="{% url 'import_data' %}"
+            class="text-xl hover:text-cyan-500 hover:underline duration-500"
+            >Data Import</a
+          >
+        </li>
+        <li class="mx-4 my-6 md:my-0">
+          <a
+            href="{% url 'report' %}"
+            id="reports"
+            class="text-xl hover:text-cyan-500 hover:underline duration-500"
+            >Reports</a
+          >
+        </li>
+                <li class="mx-4 my-6 md:my-0">
+          <a
+            href="{% url 'admin:index' %}"
+            id="admin"
+            class="text-xl hover:text-cyan-500 hover:underline duration-500"
+            >Admin</a
+          >
+        </li>
+      </ul>
+    </nav>
+     -->
+    <nav class="bg-white shadow border-gray-200 dark:bg-gray-900">
+      <div class="max-w-screen-2xl flex flex-wrap items-center justify-between mx-auto p-4 ">
+        <a href="#" class="flex items-center">
+            <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">Working time accounting system</span>
+        </a>
+        <button data-collapse-toggle="navbar-default" type="button" class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600" aria-controls="navbar-default" aria-expanded="false">
+            <span class="sr-only">Open main menu</span>
+            <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h15M1 7h15M1 13h15"/>
+            </svg>
+        </button>
+        <div class="hidden w-full md:block md:w-auto" id="navbar-default">
+          <ul class="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
+            <li>
+              <a href="{% url 'timesheet' %}" class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent" aria-current="page">Timesheet management</a>
+            </li>
+            <li>
+              <a href="{% url 'import_data' %}" class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Data Import</a>
+            </li>
+            <li>
+              <a href="{% url 'report' %}" class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Reports</a>
+            </li>
+            <li>
+              <a href="{% url 'admin:index' %}" class="block py-2 pl-3 pr-4 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500">Admin</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    {% block content%}
+    {% endblock content %}
+  </body>

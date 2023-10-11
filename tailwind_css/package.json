@@ -1,0 +1,12 @@
+{
+  "devDependencies": {
+    "tailwindcss": "^3.3.3"
+  },
+  "scripts": {
+    "start": "npx tailwindcss -i ./input.css -o ../Outsourcing_data_services/working_time_accounting_system/static/css/output.css --watch",
+    "build": "npx tailwindcss -i ./input.css -o ../Outsourcing_data_services/working_time_accounting_system/static/css/output.css"
+  },
+  "dependencies": {
+    "flowbite": "^1.8.1"
+  }
+}
