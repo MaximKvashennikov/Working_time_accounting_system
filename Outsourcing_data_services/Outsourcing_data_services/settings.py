@@ -94,8 +94,7 @@ STATIC_URL = "static/"
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 STATICFILES_DIRS = [
-    # BASE_DIR / "static",
-    "../tailwind_css/node_modules/flowbite/dist/",
+    BASE_DIR / "../tailwind_css/node_modules/flowbite/dist/",
 ]
 
 
