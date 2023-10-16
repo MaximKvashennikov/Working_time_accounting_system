@@ -1,5 +1,7 @@
 from django.core.validators import MaxValueValidator, MinValueValidator, ValidationError
 from django.db import models
+from django.db.models.signals import pre_delete
+from django.dispatch import receiver
 
 
 class Position(models.Model):
@@ -90,3 +92,27 @@ class Timesheet(models.Model):
         verbose_name = 'Таймшит'
         verbose_name_plural = 'Таймшиты'
         ordering = ['employee']
+
+
+class TimesheetHistory(models.Model):
+    employee_id = models.IntegerField()
+    task_title = models.CharField(max_length=300)
+    start_time = models.DateTimeField()
+    end_time = models.DateTimeField()
+
+    def __str__(self):
+        return f"{self.employee_id}: {self.task_title}"
+
+    class Meta:
+        verbose_name = 'История удаления таймшитов'
+        verbose_name_plural = 'Истории удаления таймшитов'
+
+
+@receiver(pre_delete, sender=Timesheet)
+def timesheet_delete_trigger(sender, instance, **kwargs):
+    TimesheetHistory.objects.create(
+        employee_id=instance.employee.id,
+        task_title=instance.task.task_name,
+        start_time=instance.start_time,
+        end_time=instance.end_time
+    )

@@ -8,6 +8,7 @@ from django.db.models import Count, Sum, F, DurationField, ExpressionWrapper, In
 from .models import Timesheet
 from django.db.models.functions import Cast, Round, Extract
 from django.views.generic import TemplateView
+from django.db.models.signals import pre_delete
 
 
 # def get_timesheets_by_employee(employee_id):
@@ -39,6 +40,7 @@ def delete_timesheet_by_id(timesheet_id):
     except Timesheet.DoesNotExist:
         return None
     employee_name = timesheet.employee.employee_name
+    pre_delete.send(sender=Timesheet, instance=timesheet)
     with connection.cursor() as cursor:
         cursor.execute(f"DELETE FROM working_time_accounting_system_timesheet WHERE id = {timesheet_id}")
         return employee_name
