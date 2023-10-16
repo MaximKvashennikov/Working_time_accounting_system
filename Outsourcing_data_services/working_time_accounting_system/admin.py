@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Position, Employee, Task, Timesheet
+from .models import Position, Employee, Task, Timesheet, TimesheetHistory
 
 
 class TimesheetAdmin(admin.ModelAdmin):
@@ -10,4 +10,5 @@ class TimesheetAdmin(admin.ModelAdmin):
 admin.site.register(Position)
 admin.site.register(Employee)
 admin.site.register(Task)
+admin.site.register(TimesheetHistory)
 admin.site.register(Timesheet, TimesheetAdmin)
