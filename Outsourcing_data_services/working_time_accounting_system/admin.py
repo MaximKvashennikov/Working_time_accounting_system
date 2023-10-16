@@ -7,8 +7,13 @@ class TimesheetAdmin(admin.ModelAdmin):
     search_fields = ('employee', 'task')
 
 
+class TimesheetHistoryAdmin(admin.ModelAdmin):
+    list_display = ('employee_id', 'task_title', 'start_time', 'end_time')
+    search_fields = ('employee_id', 'task_title', 'start_time', 'end_time')
+
+
 admin.site.register(Position)
 admin.site.register(Employee)
 admin.site.register(Task)
-admin.site.register(TimesheetHistory)
+admin.site.register(TimesheetHistory, TimesheetHistoryAdmin)
 admin.site.register(Timesheet, TimesheetAdmin)
