@@ -50,11 +50,11 @@
     {% for timesheet in timesheets %}
     <tbody>
       <tr class="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
-        <td class="px-4 py-2">{{ timesheet.0 }}</td>
-        <td class="px-4 py-2">{{ timesheet.3 }}</td>
-        <td class="px-4 py-2">{{ timesheet.4 }}</td>
-        <td class="px-4 py-2">{{ timesheet.1 }}</td>
-        <td class="px-4 py-2">{{ timesheet.2 }}</td>
+        <td class="px-4 py-2">{{ timesheet.id }}</td>
+        <td class="px-4 py-2">{{ timesheet.employee_id }}</td>
+        <td class="px-4 py-2">{{ timesheet.task_id }}</td>
+        <td class="px-4 py-2">{{ timesheet.start_time }}</td>
+        <td class="px-4 py-2">{{ timesheet.end_time }}</td>
       </tr>
     </tbody>
     {% endfor %}

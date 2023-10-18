@@ -17,11 +17,8 @@ class TimesheetListView(ListView):
     context_object_name = 'timesheets'
 
     def get_queryset(self):
-        with connection.cursor() as cursor:
-            cursor.execute(
-                f"SELECT * FROM working_time_accounting_system_timesheet WHERE employee_id = {self.kwargs['employee_id']}")
-            results = cursor.fetchall()
-            return results
+        employee_id = self.kwargs['employee_id']
+        return Timesheet.objects.filter(employee_id=employee_id)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -45,10 +42,8 @@ class DeleteTimesheetFormView(FormView):
             return redirect('timesheet_management')
 
         employee_name = timesheet.employee.employee_name
-        pre_delete.send(sender=Timesheet, instance=timesheet)
-        with connection.cursor() as cursor:
-            cursor.execute(f"DELETE FROM working_time_accounting_system_timesheet WHERE id = {timesheet_id}")
-            messages.success(self.request, f'Timesheet with ID {timesheet_id} for {employee_name} has been deleted')
+        timesheet.delete()
+        messages.success(self.request, f'Timesheet with ID {timesheet_id} for {employee_name} has been deleted')
         return super().form_valid(form)
 
 
