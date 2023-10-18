@@ -4,7 +4,7 @@
 <div class="flex flex-wrap p-4">
   <div class="flex flex-col p-4">
     <h2>Employee Timesheet</h2>
-    <form method="post" class="space-y-4">
+    <form action="{% url 'employee_timesheets_submit' %}" method="post" class="space-y-4">
       {% csrf_token %} 
       {{ employee_timesheets_form.as_p }}
       <button
@@ -17,7 +17,7 @@
   </div>
   <div class="flex flex-col p-4">
     <h2>Delete Timesheet</h2>
-    <form method="post" class="space-y-4">
+    <form action="{% url 'delete_timesheet' %}" method="post" class="space-y-4">
       {% csrf_token %} 
       {{ delete_timesheet_form.as_p }}
       <button
@@ -33,7 +33,7 @@
 <div class="p-4">{{ message }}</div>
 {% endfor %} 
 {% if timesheets %}
-<div class="overflow-x-auto">
+<div class="p-4 overflow-x-auto">
   <h1 class="font-medium py-4 mt-2 text-lg">Employee Timesheet</h1>
   <table class="text-sm text-left text-gray-700 dark:text-gray-400">
     <thead

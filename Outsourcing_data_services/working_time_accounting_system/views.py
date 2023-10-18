@@ -1,113 +1,128 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.urls import reverse_lazy
 from django.views import View
 from .importers import PositionImporter, EmployeeImporter, TimesheetImporter
 from .forms import ImportForm, EmployeeTimesheetsForm, DeleteTimesheetForm
 from django.db import transaction, connection
-from django.db.models import Count, Sum, F, DurationField, ExpressionWrapper, IntegerField, FloatField, Q
+from django.db.models import Sum, F, ExpressionWrapper, IntegerField, FloatField, Q
 from .models import Timesheet
 from django.db.models.functions import Cast, Round, Extract
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, ListView, FormView
 from django.db.models.signals import pre_delete
 
 
-# def get_timesheets_by_employee(employee_id):
-#     return Timesheet.objects.filter(employee__id=employee_id)
-#
-#
-# @transaction.atomic
-# def delete_timesheet_by_id(timesheet_id):
-#     try:
-#         timesheet = Timesheet.objects.get(id=timesheet_id)
-#         employee_name = timesheet.employee.employee_name
-#         timesheet.delete()
-#         return employee_name
-#     except Timesheet.DoesNotExist:
-#         return None
+class TimesheetListView(ListView):
+    template_name = 'index.html'
+    context_object_name = 'timesheets'
+
+    def get_queryset(self):
+        with connection.cursor() as cursor:
+            cursor.execute(
+                f"SELECT * FROM working_time_accounting_system_timesheet WHERE employee_id = {self.kwargs['employee_id']}")
+            results = cursor.fetchall()
+            return results
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["employee_timesheets_form"] = EmployeeTimesheetsForm()
+        context["delete_timesheet_form"] = DeleteTimesheetForm()
+        return context
 
 
-def get_timesheets_by_employee(employee_id):
-    with connection.cursor() as cursor:
-        cursor.execute(f"SELECT * FROM working_time_accounting_system_timesheet WHERE employee_id = {employee_id}")
-        results = cursor.fetchall()
-        return results
+class DeleteTimesheetFormView(FormView):
+    template_name = 'index.html'
+    form_class = DeleteTimesheetForm
+    success_url = reverse_lazy('timesheet_management')
+
+    @transaction.atomic
+    def form_valid(self, form):
+        timesheet_id = form.cleaned_data.get('timesheet_id')
+        try:
+            timesheet = Timesheet.objects.get(id=timesheet_id)
+        except Timesheet.DoesNotExist:
+            messages.error(self.request, f'Timesheet with ID {timesheet_id} does not exist')
+            return redirect('timesheet_management')
+
+        employee_name = timesheet.employee.employee_name
+        pre_delete.send(sender=Timesheet, instance=timesheet)
+        with connection.cursor() as cursor:
+            cursor.execute(f"DELETE FROM working_time_accounting_system_timesheet WHERE id = {timesheet_id}")
+            messages.success(self.request, f'Timesheet with ID {timesheet_id} for {employee_name} has been deleted')
+        return super().form_valid(form)
 
 
-@transaction.atomic
-def delete_timesheet_by_id(timesheet_id):
-    try:
-        timesheet = Timesheet.objects.get(id=timesheet_id)
-    except Timesheet.DoesNotExist:
-        return None
-    employee_name = timesheet.employee.employee_name
-    pre_delete.send(sender=Timesheet, instance=timesheet)
-    with connection.cursor() as cursor:
-        cursor.execute(f"DELETE FROM working_time_accounting_system_timesheet WHERE id = {timesheet_id}")
-        return employee_name
+class EmployeeTimesheetsFormView(FormView):
+    form_class = EmployeeTimesheetsForm
+    template_name = "index.html"
+    success_url = reverse_lazy('timesheet_list')
+
+    def form_valid(self, form):
+        employee = form.cleaned_data.get('employee')
+        self.success_url = reverse_lazy('timesheet_list', args=[employee.id])
+        return super().form_valid(form)
 
 
-class HomePageView(TemplateView):
+class TimesheetManagementView(TemplateView):
     template_name = "index.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["employee_timesheets_form"] = EmployeeTimesheetsForm()
         context["delete_timesheet_form"] = DeleteTimesheetForm()
-        if self.extra_context is not None and 'timesheets' in self.extra_context:
-            context["timesheets"] = self.extra_context['timesheets']
         return context
 
-    def post(self, request, *args, **kwargs):
-        delete_form = DeleteTimesheetForm(request.POST)
-        if delete_form.is_valid():
-            timesheet_id = delete_form.cleaned_data.get('timesheet_id')
-            employee_name = delete_timesheet_by_id(timesheet_id)
-            if employee_name is None:
-                messages.error(request, f'Timesheet with ID {timesheet_id} does not exist')
-            else:
-                messages.success(request, f'Timesheet with ID {timesheet_id} for {employee_name} has been deleted')
-        else:
-            form = EmployeeTimesheetsForm(request.POST)
-            if form.is_valid():
-                employee = form.cleaned_data.get('employee')
-                timesheets = get_timesheets_by_employee(employee.id)
-                self.extra_context = {'timesheets': timesheets}
-        return self.get(request, *args, **kwargs)
+
+class ImportDataFormView(FormView):
+    template_name = 'import.html'
+    form_class = ImportForm
+    success_url = reverse_lazy('import_result')
+
+    def form_valid(self, form):
+        positions = form.cleaned_data['positions_file']
+        employees = form.cleaned_data['employees_file']
+        timesheets = form.cleaned_data['timesheets_file']
+
+        position_errors, position_count = PositionImporter.import_from_csv(positions)
+        employee_errors, employee_count = EmployeeImporter.import_from_csv(employees)
+        timesheet_errors, timesheet_count = TimesheetImporter.import_from_csv(timesheets)
+
+        for error in position_errors:
+            messages.error(self.request, error)
+        for error in employee_errors:
+            messages.error(self.request, error)
+        for error in timesheet_errors:
+            messages.error(self.request, error)
+
+        self.request.session['import_results'] = {
+            'position_count': position_count,
+            'employee_count': employee_count,
+            'timesheet_count': timesheet_count,
+        }
+        return super().form_valid(form)
 
 
-class ImportDataView(View):
-    def get(self, request):
-        form = ImportForm()
-        return render(request, 'import.html', {'form': form})
+class ImportResultView(TemplateView):
+    template_name = 'import_result.html'
 
-    def post(self, request):
-        form = ImportForm(request.POST, request.FILES)
-        if form.is_valid():
-            positions = form.cleaned_data['positions_file']
-            employees = form.cleaned_data['employees_file']
-            timesheets = form.cleaned_data['timesheets_file']
-
-            position_errors, position_count = PositionImporter.import_from_csv(positions)
-            employee_errors, employee_count = EmployeeImporter.import_from_csv(employees)
-            timesheet_errors, timesheet_count = TimesheetImporter.import_from_csv(timesheets)
-
-            for error in position_errors:
-                messages.error(request, error)
-            for error in employee_errors:
-                messages.error(request, error)
-            for error in timesheet_errors:
-                messages.error(request, error)
-
-            return render(request, 'import_result.html', {
-                'position_count': position_count,
-                'employee_count': employee_count,
-                'timesheet_count': timesheet_count,
-            })
-        else:
-            return render(request, 'import.html', {'form': form})
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        import_results = self.request.session.get('import_results', None)
+        if import_results:
+            context.update(import_results)
+        return context
 
 
-class ReportView(View):
+class ReportView(TemplateView):
+    template_name = 'report.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['top5_long_tasks'] = self.top5_long_tasks()
+        context['top5_cost_tasks'] = self.top5_cost_tasks()
+        context['top5_employees'] = self.top5_employees()
+        return context
+
     def top5_long_tasks(self):
         long_tasks = (
             Timesheet.objects.annotate(
@@ -149,11 +164,3 @@ class ReportView(View):
             ).order_by("-total_hours")[:5]
         )
         return employees
-
-    def get(self, request):
-        context = {
-            "top5_long_tasks": self.top5_long_tasks(),
-            "top5_cost_tasks": self.top5_cost_tasks(),
-            "top5_employees": self.top5_employees(),
-        }
-        return render(request, "report.html", context)
