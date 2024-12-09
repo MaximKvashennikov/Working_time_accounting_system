@@ -1,4 +1,4 @@
-# Working_time_accounting_system
+# working_time_accounting_system
 This tool is used to analyze data about the time spent by employees on their tasks.
 
 1. To start building a project, enter the "docker-compose up --build" command
